@@ -1,0 +1,76 @@
+{
+  "user": {
+    "dynamic": "strict",
+    "properties": {
+      "age": {
+        "type": "integer"
+      },
+      "allowChat": {
+        "type": "boolean"
+      },
+      "allowQuickChat": {
+        "type": "boolean"
+      },
+      "displayedAboutMe": {
+        "type": "text"
+      },
+      "hot": {
+        "type": "boolean"
+      },
+      "id": {
+        "type": "keyword"
+      },
+      "interests": {
+        "type": "keyword"
+      },
+      "largePhotoUrls": {
+        "type": "text"
+      },
+      "name": {
+        "type": "keyword"
+      },
+      "newbie": {
+        "type": "boolean"
+      },
+      "onlineStatus": {
+        "type": "integer"
+      },
+      "popularityLevel": {
+        "type": "integer"
+      },
+      "popularityPnbPlace": {
+        "type": "integer"
+      },
+      "popularityVisitorsMonth": {
+        "type": "integer"
+      },
+      "popularityVisitorsToday": {
+        "type": "integer"
+      },
+      "profileFields": {
+        "type": "object",
+        "dynamic": true,
+        "properties": {
+          "Work": {
+            "type": "keyword"
+          }
+        }
+      },
+      "socialNetworks": {
+        "type": "nested",
+        "properties": {
+          "networkType": {
+            "type": "keyword"
+          },
+          "networkUrl": {
+            "type": "keyword"
+          }
+        }
+
+      },
+      "fullTextSearch": {
+        "type": "text"
+      }
+    }
+  }
+}

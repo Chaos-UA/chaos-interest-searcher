@@ -1,0 +1,74 @@
+<div style=" display: flex; flex-direction: column;">
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Filtering options</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+      <!-- filter -->
+      <div>
+
+        <mat-form-field>
+          <input matInput type="text" placeholder="Full text search" [(ngModel)]="filter.fullTextSearch">
+          <button mat-button *ngIf="filter.fullTextSearch" matSuffix mat-icon-button aria-label="Clear" (click)="filter.fullTextSearch=''">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <chaos-select
+          [options]="interests"
+          [values]="filter.interests"
+          [optionToString]="itemToString"
+          placeholder="Interests ({{interests.length}})"
+        ></chaos-select>
+
+        <chaos-select
+          [options]="jobs"
+          [values]="filter.jobs"
+          [optionToString]="itemToString"
+          placeholder="Jobs ({{jobs.length}})"
+        ></chaos-select>
+
+        <chaos-select
+          [options]="names"
+          [values]="filter.names"
+          [optionToString]="itemToString"
+          placeholder="Names ({{names.length}})"
+        ></chaos-select>
+      </div>
+      <!--^^filter^^-->
+
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="applyFilter()">Apply</button>
+    </mat-card-actions>
+  </mat-card>
+
+
+
+  <mat-card *ngFor="let user of users" style="margin-top: 1em">
+    <mat-card-header>
+      <mat-card-title><a target="_blank" href="https://badoo.com/profile/{{user.id}}">{{user.name}}</a></mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content style="margin-top: 1em">
+      <table>
+        <tr>
+          <td style>
+            <div style="width: 30em">
+              <span *ngFor="let photoUrl of user.largePhotoUrls">
+                  <img  mat-card-image src="{{photoUrl}}" alt="{{user.name}}">
+              </span>
+            </div>
+          </td>
+          <td>
+            <pre>{{user | json}}</pre>
+          </td>
+        </tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+
+</div>

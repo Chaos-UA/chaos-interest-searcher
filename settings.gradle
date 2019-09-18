@@ -1,0 +1,5 @@
+rootProject.name = 'badoo-searcher'
+include 'searcher-server'
+include 'searcher-web-client'
+include 'searcher-server'
+

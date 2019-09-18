@@ -1,0 +1,25 @@
+<!-- Toolbar -->
+
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+  <span class="nav-tool-items">
+  </span>
+  <h1>Chaos Badoo</h1>
+</mat-toolbar>
+
+<mat-sidenav-container style="height: 100%">
+  <mat-sidenav #snav mode="push">
+    <mat-nav-list>
+      <p><a mat-button routerLink="dashboard" routerLinkActive="active">Dashboard</a></p>
+      <p><a mat-button routerLink="data-sync" >Data synchronization</a></p>
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div style="margin: 0 1em;">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

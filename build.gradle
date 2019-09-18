@@ -1,0 +1,3 @@
+project(':searcher-server') {
+
+}
