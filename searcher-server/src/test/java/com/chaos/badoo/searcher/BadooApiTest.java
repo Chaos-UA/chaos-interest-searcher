@@ -4,9 +4,11 @@ import com.chaos.badoo.searcher.badoo.BadooApi;
 import com.chaos.badoo.searcher.badoo.UserDto;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.utils.URIBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.net.URL;
 import java.util.List;
 
 public class BadooApiTest {
@@ -25,6 +27,5 @@ public class BadooApiTest {
         List<UserDto> users = badooApi.getUsersFromNearBy(0, 5);
         Assert.assertEquals(5, users.size());
     }
-
 
 }

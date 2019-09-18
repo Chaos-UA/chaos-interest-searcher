@@ -26,6 +26,9 @@ export class ChaosSelectComponent<T> implements OnInit {
 
   getFilteredOptions() : T[] {
     return this.options.filter(value => {
+      if (this.values.indexOf(value) !== -1) {
+        return false;
+      }
       const textToFilter = this.filterText;
         if (!textToFilter) {
           return true;

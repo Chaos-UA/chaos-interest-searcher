@@ -5,6 +5,7 @@ import com.chaos.badoo.searcher.badoo.UserDto;
 import com.chaos.badoo.searcher.dto.SimpleItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,17 @@ public class UserService {
         return userDao.getNames();
     }
 
+    private String toUrlWithoutQueryParams(String url) {
+        try {
+            var uriBuilder = new URIBuilder(url);
+            uriBuilder.removeQuery();
+            return uriBuilder.build().toString();
+        } catch (Exception e) {
+            LOGGER.error("Failed to parse URL: {}", url, e);
+            return url;
+        }
+    }
+
     private UserModel toUserModel(UserDto dto) {
         UserModel model = new UserModel();
         model.setId(dto.getUser_id());
@@ -58,7 +70,7 @@ public class UserService {
         model.setAge(dto.getAge());
         model.setLargePhotoUrls(new LinkedHashSet<>());
         if (dto.getProfile_photo() != null && dto.getProfile_photo().getLarge_url() != null) {
-            model.getLargePhotoUrls().add(dto.getProfile_photo().getLarge_url());
+            model.getLargePhotoUrls().add(toUrlWithoutQueryParams(dto.getProfile_photo().getLarge_url()));
         }
 
         if (dto.getAlbums() != null) {
@@ -66,7 +78,7 @@ public class UserService {
                 if (album.getPhotos() != null) {
                     for (UserDto.Album.Photo photo : album.getPhotos()) {
                         if (photo.getLarge_url() != null) {
-                            model.getLargePhotoUrls().add(photo.getLarge_url());
+                            model.getLargePhotoUrls().add(toUrlWithoutQueryParams(photo.getLarge_url()));
                         }
                     }
                 }

@@ -10,7 +10,7 @@
       <div>
 
         <mat-form-field>
-          <input matInput type="text" placeholder="Full text search" [(ngModel)]="filter.fullTextSearch">
+          <input matInput type="text" placeholder="Full text search" [(ngModel)]="filter.fullTextSearch" autocomplete="off">
           <button mat-button *ngIf="filter.fullTextSearch" matSuffix mat-icon-button aria-label="Clear" (click)="filter.fullTextSearch=''">
             <mat-icon>close</mat-icon>
           </button>
@@ -41,32 +41,20 @@
 
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="applyFilter()">Apply</button>
+      <button mat-raised-button color="primary" (click)="applyFilter()">Apply</button> Displaying {{users.length}} users
     </mat-card-actions>
   </mat-card>
 
-
-
   <mat-card *ngFor="let user of users" style="margin-top: 1em">
     <mat-card-header>
-      <mat-card-title><a target="_blank" href="https://badoo.com/profile/{{user.id}}">{{user.name}}</a></mat-card-title>
+      <mat-card-title><a target="_blank" href="https://badoo.com/profile/{{user.id}}">{{user.name}}</a> - {{user.largePhotoUrls.length}} photos</mat-card-title>
     </mat-card-header>
 
     <mat-card-content style="margin-top: 1em">
-      <table>
-        <tr>
-          <td style>
-            <div style="width: 30em">
-              <span *ngFor="let photoUrl of user.largePhotoUrls">
-                  <img  mat-card-image src="{{photoUrl}}" alt="{{user.name}}">
-              </span>
-            </div>
-          </td>
-          <td>
-            <pre>{{user | json}}</pre>
-          </td>
-        </tr>
-      </table>
+      <a *ngFor="let photoUrl of user.largePhotoUrls" target="_blank" href="https://badoo.com/profile/{{user.id}}">
+          <img style="width: 30em; margin: 0.1em" mat-card-image src="{{photoUrl}}" alt="{{user.name}}">
+      </a>
+      <pre>{{user | json}}</pre>
     </mat-card-content>
   </mat-card>
 
