@@ -1,6 +1,7 @@
 package com.chaos.badoo.searcher;
 
 import com.chaos.badoo.searcher.badoo.BadooApi;
+import com.chaos.badoo.searcher.badoo.SearchSettingsDto;
 import com.chaos.badoo.searcher.badoo.UserDto;
 import com.chaos.badoo.searcher.dto.SimpleItem;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +27,25 @@ public class UserService {
 
     public synchronized void synchronizeWithBadoo() {
         LOGGER.info("Synchronization with badoo has been initiated");
-        badooApi.getAllUsersFromNearByPages(100).forEachRemaining(usersPage -> {
-            userDao.save(usersPage.getItems().stream().map(this::toUserModel).collect(Collectors.toList()));
-        });
-        LOGGER.info("Synchronization with badoo has been finished");
+        long startTime = System.currentTimeMillis();
+        int ageStart = 18;
+        int ageEnd = 28;
+        for (int i = ageStart; i < ageEnd; i++) {
+            SearchSettingsDto searchSettings = new SearchSettingsDto();
+            searchSettings.setAgeStart(i);
+            searchSettings.setAgeEnd(i + 1);
+            badooApi.updateSearchSettings(searchSettings);
+            badooApi.getAllUsersFromNearByPages(100).forEachRemaining(usersPage -> {
+                userDao.save(usersPage.getItems().stream().map(this::toUserModel).collect(Collectors.toList()));
+            });
+        }
+
+        SearchSettingsDto searchSettings = new SearchSettingsDto();
+        searchSettings.setAgeStart(ageStart);
+        searchSettings.setAgeEnd(ageEnd);
+        badooApi.updateSearchSettings(searchSettings);
+        double minutes = (System.currentTimeMillis() - startTime) / 1000D / 60D;
+        LOGGER.info("Synchronization with badoo has been finished in {} minutes", minutes);
     }
 
     public List<UserModel> searchUsers(SearchUserParams params) {
@@ -90,6 +106,7 @@ public class UserService {
         model.setAllowChat(dto.getAllow_chat());
         model.setAllowQuickChat(dto.getAllow_quick_chat());
         model.setOnlineStatus(dto.getOnline_status());
+        model.setOnlineStatusText(dto.getOnline_status_text());
         model.setPopularityLevel(dto.getPopularity_level());
         model.setPopularityPnbPlace(dto.getPopularity_pnb_place());
         model.setPopularityVisitorsToday(dto.getPopularity_visitors_today());

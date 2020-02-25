@@ -20,6 +20,7 @@ public class UserDto {
     private Boolean allow_chat;
     private Boolean allow_quick_chat;
     private Integer online_status;
+    private String online_status_text;
     private Integer popularity_level;
     private Integer popularity_pnb_place;
     private Integer popularity_visitors_today;

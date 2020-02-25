@@ -18,6 +18,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
@@ -92,6 +93,8 @@ public class UserDao {
     public List<UserModel> searchUsers(SearchUserParams params) {
         BoolQueryBuilder rootQuery = QueryBuilders.boolQuery();
 
+        rootQuery.mustNot(buildOnlineTextQuery());
+
         if (StringUtils.isNotBlank(params.getFullTextSearch())) {
             rootQuery.must(QueryBuilders.queryStringQuery(params.getFullTextSearch()));
         }
@@ -113,7 +116,7 @@ public class UserDao {
 
         SearchRequestBuilder searchRequest = client.prepareSearch(INDEX_NAME);
         searchRequest.setSource(searchBuilder);
-        searchRequest.setSize(100);
+        searchRequest.setSize(200);
 
         SearchResponse searchResponse = searchRequest.get();
 
@@ -147,12 +150,21 @@ public class UserDao {
     }
 
     private List<SimpleItem> getUsersCountByField(String fieldName) {
+        BoolQueryBuilder rootQuery = QueryBuilders.boolQuery();
+
+        rootQuery.mustNot(buildOnlineTextQuery());
+
         TermsAggregationBuilder interestsTerms = AggregationBuilders.terms(fieldName);
         interestsTerms.field(fieldName);
         interestsTerms.size(Integer.MAX_VALUE);
 
+        SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
+        searchBuilder.query(rootQuery);
+        searchBuilder.size(0);
+
         SearchResponse searchResponse = client.prepareSearch(INDEX_NAME)
                 .setSize(0)
+                .setQuery(searchBuilder.query())
                 .addAggregation(interestsTerms)
                 .get();
 
@@ -167,5 +179,9 @@ public class UserDao {
         }
 
         return Collections.emptyList();
+    }
+
+    private TermsQueryBuilder buildOnlineTextQuery() {
+        return QueryBuilders.termsQuery(UserModel.ONLINE_TEXT_STATUS, "Online 7+ days ago", "");
     }
 }

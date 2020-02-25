@@ -19,6 +19,7 @@ public class UserModel {
     public static final String INTERESTS = "interests";
     public static final String JOB = "profileFields.Work";
     public static final String NAME = "name";
+    public static final String ONLINE_TEXT_STATUS = "onlineStatusText";
 
     private String id;
     @JsonProperty(NAME)
@@ -30,6 +31,8 @@ public class UserModel {
     private Boolean allowChat;
     private Boolean allowQuickChat;
     private Integer onlineStatus;
+    @JsonProperty(ONLINE_TEXT_STATUS)
+    private String onlineStatusText;
     private Integer popularityLevel;
     private Integer popularityPnbPlace;
     private Integer popularityVisitorsToday;

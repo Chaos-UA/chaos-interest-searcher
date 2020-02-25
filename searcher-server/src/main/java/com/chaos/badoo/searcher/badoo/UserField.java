@@ -105,6 +105,7 @@ public enum  UserField {
     IS_NEWBIE(240),
     IS_HOT(260),
     ONLINE_STATUS(330),
+    ONLINE_STATUS_TEXT(331),
     PREVIEW_PHOTO(340),
     /**
      * Available only for request_albums

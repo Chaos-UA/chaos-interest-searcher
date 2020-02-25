@@ -10,15 +10,13 @@ import com.chaos.badoo.searcher.common.PageableResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpLogging;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Service
@@ -27,6 +25,8 @@ public class BadooApi {
 
     private final String xSessionHeader;
     private final ObjectMapper objectMapper;
+
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
     public BadooApi(@Value("${x-session-header}") String xSessionHeader, ObjectMapper objectMapper) {
@@ -49,11 +49,8 @@ public class BadooApi {
 
     public List<UserDto> getUsersFromNearBy(int offset, int pageSize) {
         try {
-            LOGGER.info("Fetching users from near by. Offset: {}, page size: {}", offset, pageSize);
-            String url = "https://badoo.com/webapi.phtml?SERVER_GET_USER_LIST_WITH_SETTINGS";
 
-            HttpLogging.forLogName(RestTemplate.class);
-            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://badoo.com/webapi.phtml?SERVER_GET_USER_LIST_WITH_SETTINGS";
 
             MultiValueMap<String, String> headersMap = new HttpHeaders();
             headersMap.put("X-Session-id", Arrays.asList(xSessionHeader));
@@ -64,6 +61,10 @@ public class BadooApi {
             JsonNode responseBody = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class).getBody();
 
             JsonNode sectionNode = responseBody.get("body").get(0).get("client_user_list").get("section").get(0);
+            LOGGER.info(
+                    "Fetched users from near by. Offset: {}, page size: {}, total count: {}",
+                    offset, pageSize, sectionNode.get("total_count")
+            );
             if (!sectionNode.has("users")) {
                 return Collections.emptyList();
             }
@@ -71,6 +72,44 @@ public class BadooApi {
             return objectMapper.convertValue(sectionNode.get("users"), new TypeReference<List<UserDto>>() {});
         } catch (Exception e) {
             throw new RuntimeException(String.format("Failed to get users from near by. Offset: %s, page size: %s", offset, pageSize), e);
+        }
+    }
+
+    public void updateSearchSettings(SearchSettingsDto searchSettingsDto) {
+        LOGGER.info("Updating search settings to: {}", searchSettingsDto);
+
+        ObjectNode settingsNode = objectMapper.createObjectNode();
+        settingsNode.put("version", 1);
+        settingsNode.put("message_type", 420);
+        settingsNode.put("message_id", 53);
+        ObjectNode bodyObject = settingsNode.putArray("body").addObject();
+        settingsNode.put("is_background", false);
+
+
+        bodyObject.put("message_type", 503);
+        ObjectNode searchSettings = bodyObject.putObject("server_save_search_settings");
+        searchSettings.put("context_type", 2);
+
+        ObjectNode settings = searchSettings.putObject("settings");
+        settings.put("$gpb", "badoo.bma.SearchSettingsValues");
+        settings.putObject("age")
+                .put("start", searchSettingsDto.getAgeStart())
+                .put("end", searchSettingsDto.getAgeEnd());
+        settings.putObject("distance")
+                .put("fixed_end", searchSettingsDto.getDistance());
+            //    .put("fixed_end", "a_62_291_4247_100_Km");
+
+        String url = "https://badoo.com/webapi.phtml?SERVER_SAVE_SEARCH_SETTINGS_AND_GET_USER_LIST";
+        MultiValueMap<String, String> headersMap = new HttpHeaders();
+        headersMap.put("X-Session-id", Arrays.asList(xSessionHeader));
+        try {
+            RequestEntity<JsonNode> httpEntity = new RequestEntity<>(settingsNode, headersMap, HttpMethod.POST, new URI(url));
+            ResponseEntity<JsonNode> response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, JsonNode.class);
+            if (!response.getStatusCode().equals(HttpStatus.OK) || response.getBody().get("message_type").intValue() != 504) {
+                throw new RuntimeException(String.format("Invalid response: %s. Body: %s", response.getStatusCode(), response.getBody()));
+            }
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Failed to update search settings: " + searchSettingsDto, e);
         }
     }
 

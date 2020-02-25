@@ -35,6 +35,9 @@
       "onlineStatus": {
         "type": "integer"
       },
+      "onlineStatusText": {
+        "type": "keyword"
+      },
       "popularityLevel": {
         "type": "integer"
       },
