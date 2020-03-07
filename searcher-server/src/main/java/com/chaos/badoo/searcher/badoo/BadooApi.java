@@ -95,8 +95,8 @@ public class BadooApi {
         settings.putObject("age")
                 .put("start", searchSettingsDto.getAgeStart())
                 .put("end", searchSettingsDto.getAgeEnd());
-        settings.putObject("distance")
-                .put("fixed_end", searchSettingsDto.getDistance());
+      //  settings.putObject("distance")
+      //          .put("fixed_end", searchSettingsDto.getDistance());
             //    .put("fixed_end", "a_62_291_4247_100_Km");
 
         String url = "https://badoo.com/webapi.phtml?SERVER_SAVE_SEARCH_SETTINGS_AND_GET_USER_LIST";

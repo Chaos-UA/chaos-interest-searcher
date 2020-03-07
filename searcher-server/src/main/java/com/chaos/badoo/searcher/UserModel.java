@@ -19,16 +19,20 @@ public class UserModel {
     public static final String INTERESTS = "interests";
     public static final String JOB = "profileFields.Work";
     public static final String NAME = "name";
+    public static final String AGE = "age";
     public static final String ONLINE_TEXT_STATUS = "onlineStatusText";
+    public static final String ALLOW_QUICK_CHAT = "allowQuickChat";
 
     private String id;
     @JsonProperty(NAME)
     private String name;
+    @JsonProperty(AGE)
     private Integer age;
     private LinkedHashSet<String> largePhotoUrls;
     private Boolean newbie;
     private Boolean hot;
     private Boolean allowChat;
+    @JsonProperty(ALLOW_QUICK_CHAT)
     private Boolean allowQuickChat;
     private Integer onlineStatus;
     @JsonProperty(ONLINE_TEXT_STATUS)

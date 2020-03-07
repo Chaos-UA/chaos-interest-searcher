@@ -8,6 +8,7 @@
 
       <!-- filter -->
       <div>
+        <mat-checkbox [(ngModel)]="filter.allowQuickChat" (change)="reload()">Allow quick chat</mat-checkbox>
 
         <mat-form-field>
           <input matInput type="text" placeholder="Full text search" [(ngModel)]="filter.fullTextSearch" autocomplete="off">
@@ -35,6 +36,13 @@
           [values]="filter.names"
           [optionToString]="itemToString"
           placeholder="Names ({{names.length}})"
+        ></chaos-select>
+
+        <chaos-select
+          [options]="ages"
+          [values]="filter.ages"
+          [optionToString]="itemToString"
+          placeholder="Ages ({{ages.length}})"
         ></chaos-select>
       </div>
       <!--^^filter^^-->

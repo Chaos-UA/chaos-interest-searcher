@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,23 +10,27 @@ export class ApiService {
   constructor(private httpClient: HttpClient) { }
 
   public initiateSync() {
-    this.httpClient.get("/api/users/initiate-sync").subscribe();
+    this.httpClient.get('/api/users/initiate-sync').subscribe();
   }
 
-  public getInterests() : Observable<SimpleItem[]> {
-    return this.httpClient.get<SimpleItem[]>("/api/interests");
+  public getInterests(params: SearchUserParams): Observable<SimpleItem[]> {
+    return this.httpClient.post<SimpleItem[]>('/api/interests', params);
   }
 
-  public getJobs() : Observable<SimpleItem[]> {
-    return this.httpClient.get<SimpleItem[]>("/api/jobs");
+  public getJobs(params: SearchUserParams): Observable<SimpleItem[]> {
+    return this.httpClient.post<SimpleItem[]>('/api/jobs', params);
   }
 
-  public getNames() : Observable<SimpleItem[]> {
-    return this.httpClient.get<SimpleItem[]>("/api/names");
+  public getNames(params: SearchUserParams): Observable<SimpleItem[]> {
+    return this.httpClient.post<SimpleItem[]>('/api/names', params);
   }
 
-  public searchUsers(params : SearchUserParams) : Observable<User[]> {
-    return this.httpClient.post<User[]>("/api/users", params);
+  public getAges(params: SearchUserParams): Observable<SimpleItem[]> {
+    return this.httpClient.post<SimpleItem[]>('/api/ages', params);
+  }
+
+  public searchUsers(params: SearchUserParams): Observable<User[]> {
+    return this.httpClient.post<User[]>('/api/users', params);
   }
 
 }
@@ -56,10 +60,12 @@ export interface SocialNetwork {
 }
 
 export interface SearchUserParams {
-  fullTextSearch? : string;
+  allowQuickChat?: boolean;
+  fullTextSearch?: string;
   interests?: string[];
   jobs?: string[];
   names?: string[];
+  ages?: string[];
 }
 
 export interface SimpleItem {

@@ -56,16 +56,20 @@ public class UserService {
         return users;
     }
 
-    public List<SimpleItem> getInterests() {
-        return userDao.getInterests();
+    public List<SimpleItem> getInterests(SearchUserParams params) {
+        return userDao.getInterests(params);
     }
 
-    public List<SimpleItem> getJobs() {
-        return userDao.getJobs();
+    public List<SimpleItem> getJobs(SearchUserParams params) {
+        return userDao.getJobs(params);
     }
 
-    public List<SimpleItem> getNames() {
-        return userDao.getNames();
+    public List<SimpleItem> getNames(SearchUserParams params) {
+        return userDao.getNames(params);
+    }
+
+    public List<SimpleItem> getAges(SearchUserParams params) {
+        return userDao.getAges(params);
     }
 
     private String toUrlWithoutQueryParams(String url) {

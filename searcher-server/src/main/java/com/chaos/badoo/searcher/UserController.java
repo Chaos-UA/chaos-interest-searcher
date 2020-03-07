@@ -15,7 +15,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/api/users/initiate-sync")
+    @RequestMapping(path = "/api/users/initiate-sync")
     public void initiateSync() {
         userService.synchronizeWithBadoo();
     }
@@ -25,19 +25,24 @@ public class UserController {
         return userService.searchUsers(params);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/api/interests")
-    public List<SimpleItem> getInterests() {
-        return userService.getInterests();
+    @RequestMapping(method = RequestMethod.POST, path = "/api/interests")
+    public List<SimpleItem> getInterests(@RequestBody SearchUserParams params) {
+        return userService.getInterests(params);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/api/jobs")
-    public List<SimpleItem> getJobs() {
-        return userService.getJobs();
+    @RequestMapping(method = RequestMethod.POST, path = "/api/jobs")
+    public List<SimpleItem> getJobs(@RequestBody SearchUserParams params) {
+        return userService.getJobs(params);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/api/names")
-    public List<SimpleItem> getNames() {
-        return userService.getNames();
+    @RequestMapping(method = RequestMethod.POST, path = "/api/names")
+    public List<SimpleItem> getNames(@RequestBody SearchUserParams params) {
+        return userService.getNames(params);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/api/ages")
+    public List<SimpleItem> getAges(@RequestBody SearchUserParams params) {
+        return userService.getAges(params);
     }
 
 }

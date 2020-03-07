@@ -13,12 +13,15 @@ export class DashboardComponent implements OnInit {
   interests: SimpleItem[] = [];
   jobs: SimpleItem[] = [];
   names: SimpleItem[] = [];
+  ages: SimpleItem[] = [];
 
   filter: DashboardFilter = {
+    allowQuickChat: false,
     fullTextSearch: '',
     interests: [],
     jobs: [],
-    names: []
+    names: [],
+    ages: []
   };
 
   users: User[] = [];
@@ -28,32 +31,49 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.getInterests().subscribe((interests : SimpleItem[]) => {
+    this.reload();
+  }
+
+  reload() {
+    const params: SearchUserParams = this.buildSearchUserParams();
+
+    this.apiService.getInterests(params).subscribe((interests: SimpleItem[]) => {
       this.interests = interests;
     });
 
-    this.apiService.getJobs().subscribe((jobs : SimpleItem[]) => {
+    this.apiService.getJobs(params).subscribe((jobs: SimpleItem[]) => {
       this.jobs = jobs;
     });
 
-    this.apiService.getNames().subscribe((names : SimpleItem[]) => {
+    this.apiService.getNames(params).subscribe((names: SimpleItem[]) => {
       this.names = names;
+    });
+
+    this.apiService.getAges(params).subscribe((ages: SimpleItem[]) => {
+      this.ages = ages;
     });
 
     this.applyFilter();
   }
 
   applyFilter() {
-    const params : SearchUserParams = {
+    const params: SearchUserParams = this.buildSearchUserParams();
+
+    this.apiService.searchUsers(params).subscribe((users: User[]) => {
+      this.users = users;
+    });
+  }
+
+  buildSearchUserParams(): SearchUserParams {
+    const params: SearchUserParams = {
+      allowQuickChat: this.filter.allowQuickChat,
       fullTextSearch: this.filter.fullTextSearch,
       interests: this.filter.interests.map(v => v.name),
       jobs: this.filter.jobs.map(v => v.name),
-      names: this.filter.names.map(v => v.name)
+      names: this.filter.names.map(v => v.name),
+      ages: this.filter.ages.map(v => v.name)
     };
-
-    this.apiService.searchUsers(params).subscribe((users : User[]) => {
-      this.users = users;
-    });
+    return params;
   }
 
   itemToString(interest: SimpleItem) {
@@ -66,8 +86,10 @@ export class DashboardComponent implements OnInit {
 }
 
 interface DashboardFilter {
+  allowQuickChat: boolean;
   fullTextSearch: string;
   interests: SimpleItem[];
   jobs: SimpleItem[];
   names: SimpleItem[];
+  ages: SimpleItem[];
 }

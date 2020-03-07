@@ -21,6 +21,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.InternalMappedTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.InternalTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -94,6 +97,9 @@ public class UserDao {
         BoolQueryBuilder rootQuery = QueryBuilders.boolQuery();
 
         rootQuery.mustNot(buildOnlineTextQuery());
+        if (Boolean.TRUE.equals(params.getAllowQuickChat())) {
+            rootQuery.must(QueryBuilders.termsQuery(UserModel.ALLOW_QUICK_CHAT, true));
+        }
 
         if (StringUtils.isNotBlank(params.getFullTextSearch())) {
             rootQuery.must(QueryBuilders.queryStringQuery(params.getFullTextSearch()));
@@ -109,6 +115,10 @@ public class UserDao {
 
         if (CollectionUtils.isNotEmpty(params.getNames())) {
             rootQuery.must(QueryBuilders.termsQuery(UserModel.NAME, params.getNames()));
+        }
+
+        if (CollectionUtils.isNotEmpty(params.getAges())) {
+            rootQuery.must(QueryBuilders.termsQuery(UserModel.AGE, params.getAges()));
         }
 
         SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
@@ -129,16 +139,20 @@ public class UserDao {
         return Arrays.stream(searchHits).map(this::searchHitToUserModel).collect(Collectors.toList());
     }
 
-    public List<SimpleItem> getInterests() {
-        return getUsersCountByField(UserModel.INTERESTS);
+    public List<SimpleItem> getInterests(SearchUserParams params) {
+        return getUsersCountByField(UserModel.INTERESTS, params);
     }
 
-    public List<SimpleItem> getJobs() {
-        return getUsersCountByField(UserModel.JOB);
+    public List<SimpleItem> getJobs(SearchUserParams params) {
+        return getUsersCountByField(UserModel.JOB, params);
     }
 
-    public List<SimpleItem> getNames() {
-        return getUsersCountByField(UserModel.NAME);
+    public List<SimpleItem> getNames(SearchUserParams params) {
+        return getUsersCountByField(UserModel.NAME, params);
+    }
+
+    public List<SimpleItem> getAges(SearchUserParams params) {
+        return getUsersCountByField(UserModel.AGE, params);
     }
 
     private UserModel searchHitToUserModel(SearchHit searchHit) {
@@ -149,10 +163,13 @@ public class UserDao {
         }
     }
 
-    private List<SimpleItem> getUsersCountByField(String fieldName) {
+    private List<SimpleItem> getUsersCountByField(String fieldName, SearchUserParams params) {
         BoolQueryBuilder rootQuery = QueryBuilders.boolQuery();
 
         rootQuery.mustNot(buildOnlineTextQuery());
+        if (Boolean.TRUE.equals(params.getAllowQuickChat())) {
+            rootQuery.must(QueryBuilders.termsQuery(UserModel.ALLOW_QUICK_CHAT, true));
+        }
 
         TermsAggregationBuilder interestsTerms = AggregationBuilders.terms(fieldName);
         interestsTerms.field(fieldName);
@@ -168,9 +185,10 @@ public class UserDao {
                 .addAggregation(interestsTerms)
                 .get();
 
-        StringTerms interestsStringTerms = searchResponse.getAggregations().get(fieldName);
-        if (interestsStringTerms.getBuckets() != null) {
-            return interestsStringTerms.getBuckets().stream().map(v -> {
+        InternalMappedTerms terms = searchResponse.getAggregations().get(fieldName);
+        if (terms.getBuckets() != null) {
+            List<InternalTerms.Bucket> buckets = terms.getBuckets();
+            return buckets.stream().map(v -> {
                 SimpleItem interest = new SimpleItem();
                 interest.setName(v.getKeyAsString());
                 interest.setUsersCount(v.getDocCount());

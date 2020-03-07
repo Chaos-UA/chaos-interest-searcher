@@ -11,9 +11,11 @@ import java.util.Set;
 @ToString
 public class SearchUserParams {
 
+    private Boolean allowQuickChat;
     private String fullTextSearch;
     private Set<String> interests;
     private Set<String> jobs;
     private Set<String> names;
+    private Set<String> ages;
 
 }

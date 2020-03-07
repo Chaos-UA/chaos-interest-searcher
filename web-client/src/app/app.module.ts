@@ -12,6 +12,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {ChaosSelectComponent} from "./components/chaos-select/chaos-select.component";
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -20,18 +21,19 @@ import {ChaosSelectComponent} from "./components/chaos-select/chaos-select.compo
     DashboardComponent,
     ChaosSelectComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    AngularMaterialModule,
-    FlexLayoutModule,
-    HttpClientModule,
-    MatAutocompleteModule,
-    FormsModule,
-    ReactiveFormsModule,
-    // ReactiveFormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        AngularMaterialModule,
+        FlexLayoutModule,
+        HttpClientModule,
+        MatAutocompleteModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatCheckboxModule,
+        // ReactiveFormsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
